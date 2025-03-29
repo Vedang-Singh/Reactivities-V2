@@ -13,7 +13,7 @@ export default function ActivityList() {
 			{activities.map(a => (
 				<ActivityCard
 					key={a.id}
-					activities={a}
+					activity={a}
 				/>
 			))}
 		</Box>
