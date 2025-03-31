@@ -1,13 +1,16 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import agent from "../api/agent";
+import {useLocation} from "react-router";
 
 export const useActivities = (id?: string) =>
 {
     const queryClient = useQueryClient();
+    const location = useLocation();
 
     const { data: activities, isPending } = useQuery({
         queryKey: ["activities"],
         queryFn: async () => (await agent.get<Activity[]>("/activities/")).data,
+        enabled: !id && location.pathname === "/activities", // only executed in "/activities" and no id is supplied
     });
 
     // If isPending is used below, it will be true even if "activity" below is not used in 
