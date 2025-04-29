@@ -6,7 +6,8 @@ import {router} from "../../app/router/Routes.tsx";
 const sleep = (delay: number) => new Promise((resolve) => setTimeout(resolve, delay));
 
 const agent = axios.create({
-    baseURL: import.meta.env.VITE_API_URL
+    baseURL: import.meta.env.VITE_API_URL,
+    withCredentials: true,
 });
 
 // When request is one its way out
@@ -17,7 +18,7 @@ agent.interceptors.request.use(config => {
 
 agent.interceptors.response.use(
     async (response) => {
-        await sleep(1000);
+        await sleep(0);
         store.uiStore.isIdle();
         return response;
     },

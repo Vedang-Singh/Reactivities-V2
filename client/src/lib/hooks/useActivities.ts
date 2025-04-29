@@ -1,17 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import agent from "../api/agent";
-import {useLocation} from "react-router";
-import {Activity} from "../types";
+import { useLocation } from "react-router";
+import { FieldValues } from "react-hook-form";
+import { useAccount } from "./useAccount";
 
 export const useActivities = (id?: string) =>
 {
     const queryClient = useQueryClient();
+    const { currentUser } = useAccount();
     const location = useLocation();
 
-    const { data: activities, isPending } = useQuery({
+    const { data: activities, isLoading } = useQuery({
         queryKey: ["activities"],
         queryFn: async () => (await agent.get<Activity[]>("/activities/")).data,
-        enabled: !id && location.pathname === "/activities", // only executed in "/activities" and no id is supplied
+        // only executed in "/activities" and when no id is supplied and there is a currentUser
+        enabled: !id && location.pathname === "/activities" && !!currentUser,
     });
 
     // If isPending is used below, it will be true even if "activity" below is not used in 
@@ -20,7 +23,8 @@ export const useActivities = (id?: string) =>
     const { data: activity, isLoading: isLoadingActivity } = useQuery({
         queryKey: ["activities", id],
         queryFn: async () => (await agent.get<Activity>(`/activities/${id}`)).data,
-        enabled: !!id, // Only run this query if id is defined/true
+        // Only run this query if id is defined/true & there is currentUser
+        enabled: !!id && !!currentUser,
     });
 
     const updateActivity = useMutation({
@@ -35,7 +39,7 @@ export const useActivities = (id?: string) =>
     });
 
     const createActivity = useMutation({
-        mutationFn: async (activity: Activity) =>
+        mutationFn: async (activity: FieldValues) =>
             (await agent.post("/activities", activity)).data,
         onSuccess: async () =>
         {
@@ -57,7 +61,7 @@ export const useActivities = (id?: string) =>
 
     return {
         activities,
-        isPending,
+        isLoading,
         updateActivity,
         createActivity,
         deleteActivity,

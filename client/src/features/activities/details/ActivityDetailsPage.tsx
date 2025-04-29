@@ -2,7 +2,7 @@ import {
 	Grid2,
 	Typography,
 } from "@mui/material";
-import { useNavigate, useParams } from "react-router";
+import { useParams } from "react-router";
 import { useActivities } from "../../../lib/hooks/useActivities";
 import ActivityDetailsChat from "./ActivityDetailsChat";
 import ActivityDetailsHeader from "./ActivityDetailsHeader";
@@ -12,7 +12,7 @@ import ActivityDetailsSidebar from "./ActivityDetailsSidebar";
 export default function ActivityDetailsPage() {
 	const { id } = useParams();
 	const { activity, isLoadingActivity } = useActivities(id);
-	const navigate = useNavigate();
+	// const navigate = useNavigate();
 
 	if (isLoadingActivity) return <Typography>Loading...</Typography>;
 

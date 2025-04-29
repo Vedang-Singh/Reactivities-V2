@@ -1,7 +1,7 @@
-import {Box, Button, Paper, TextField, Typography} from "@mui/material";
+import {Box, Button, Paper, Typography} from "@mui/material";
 import {useActivities} from "../../../lib/hooks/useActivities";
 import {useNavigate, useParams} from "react-router";
-import {FieldValues, useForm} from "react-hook-form";
+import {useForm} from "react-hook-form";
 import {useEffect} from "react";
 import {activitySchema, ActivitySchema} from "../../../lib/schemas/activitySchema.ts";
 import {zodResolver} from "@hookform/resolvers/zod";
