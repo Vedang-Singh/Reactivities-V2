@@ -13,4 +13,8 @@
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="CloudinaryDotNet" Version="1.27.5" />
+	</ItemGroup>
 </Project>

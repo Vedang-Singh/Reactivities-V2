@@ -30,5 +30,7 @@ public class MappingProfiles : Profile
             .ForMember(destination => destination.DisplayName, o => o.MapFrom(s => s.User.DisplayName))
             .ForMember(destination => destination.ImageUrl, o => o.MapFrom(s => s.User.ImageUrl))
             .ForMember(destination => destination.Bio, o => o.MapFrom(s => s.User.Bio));
+
+        CreateMap<User, UserProfile>();
     }
 }
