@@ -30,7 +30,13 @@ export default function ActivityCard({ activity }: Props) {
 		<Card elevation={3} sx={{ borderRadius: 3 }}>
 			<Box display="flex" justifyContent="space-between" alignItems="center">
 				<CardHeader
-					avatar={<Avatar sx={{ height: 80, width: 80 }} />}
+					avatar={
+						<Avatar
+							src={activity.hostImageUrl}
+							sx={{ height: 80, width: 80 }}
+							alt="image of host"
+						/>
+					}
 					title={activity.title}
 					slotProps={{
 						title: {
@@ -41,7 +47,7 @@ export default function ActivityCard({ activity }: Props) {
 					subheader={
 						<>
 							Hosted By {""}{" "}
-							<Link to={`/profile/${activity.hostId}`}>
+							<Link to={`/profiles/${activity.hostId}`}>
 								{activity.hostDisplayName}
 							</Link>
 						</>
@@ -49,7 +55,12 @@ export default function ActivityCard({ activity }: Props) {
 				/>
 				<Box display="flex" flexDirection="column" gap={2} mr={2}>
 					{(activity.isHost || activity.isGoing) && (
-						<Chip label={label} variant="outlined" color={color} sx={{ borderRadius: 2 }} />
+						<Chip
+							label={label}
+							variant="outlined"
+							color={color}
+							sx={{ borderRadius: 2 }}
+						/>
 					)}
 					{activity.isCancelled && (
 						<Chip label="Cancelled" color="error" sx={{ borderRadius: 2 }} />
@@ -77,7 +88,7 @@ export default function ActivityCard({ activity }: Props) {
 					gap={2}
 					sx={{ backgroundColor: "grey.200", py: 3, pl: 3 }}
 				>
-					{activity.attendees.map((attendee) => (
+					{activity.attendees.map(attendee => (
 						<AvatarPopover profile={attendee} key={attendee.id} />
 					))}
 				</Box>

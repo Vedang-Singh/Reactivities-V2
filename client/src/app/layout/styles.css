@@ -1,4 +1,10 @@
 .react-calendar {
-    width: 100% !important;
-    border: none !important;
+	width: 100% !important;
+	border: none !important;
+}
+
+.img-preview {
+	width: 300px;
+	height: 300px;
+	overflow: hidden;
 }

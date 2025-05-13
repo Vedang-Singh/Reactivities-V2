@@ -11,6 +11,7 @@ import ServerError from "../../features/errors/ServerError.tsx";
 import LoginForm from "../../features/account/LoginForm.tsx";
 import RequireAuth from "./RequireAuth.tsx";
 import RegisterForm from "../../features/account/RegisterForm.tsx";
+import ProfilePage from "../../features/profile/ProfilePage.tsx";
 
 export const router = createBrowserRouter([
 	{
@@ -26,6 +27,7 @@ export const router = createBrowserRouter([
 					// The key prop is used to force the component to remount when navigating to the same route with different parameters
 					{ path: "createActivity", element: <ActivityForm key="create" /> },
 					{ path: "manage/:id", element: <ActivityForm /> },
+					{ path: "profiles/:id", element: <ProfilePage /> },
 				],
 			},
 			{ path: "/", element: <HomePage /> },

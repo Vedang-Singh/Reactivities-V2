@@ -20,6 +20,7 @@ export const useActivities = (id?: string) =>
                 ...act,
                 isHost: act.hostId === currentUser?.id,
                 isGoing: act.attendees.some(a => a.id === currentUser?.id),
+                hostImageUrl: act.attendees.find(a => a.id === act.hostId)?.imageUrl,
             })
         )
     });
@@ -37,6 +38,7 @@ export const useActivities = (id?: string) =>
                 ...data,
                 isHost: data.hostId === currentUser?.id,
                 isGoing: data.attendees.some(a => a.id === currentUser?.id),
+                hostImageUrl: data.attendees.find(a => a.id === data.hostId)?.imageUrl,
             })
     });
 
