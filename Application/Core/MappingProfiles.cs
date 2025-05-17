@@ -12,6 +12,8 @@ public class MappingProfiles : Profile
         CreateMap<Activity, Activity>();
         CreateMap<CreateActivityDto, Activity>();
         CreateMap<EditActivityDto, Activity>();
+
+        // From Activity to ActivityDto
         CreateMap<Activity, ActivityDto>()
 
             // ActivityDto
@@ -22,7 +24,6 @@ public class MappingProfiles : Profile
 
             .ForMember(destination => destination.HostId,
 
-            // Activity
             o => o.MapFrom(s => s.Attendees.FirstOrDefault(x => x.IsHost)!.User.Id));
 
         CreateMap<ActivityAttendee, UserProfile>()
@@ -32,5 +33,9 @@ public class MappingProfiles : Profile
             .ForMember(destination => destination.Bio, o => o.MapFrom(s => s.User.Bio));
 
         CreateMap<User, UserProfile>();
+        CreateMap<Comment, CommentDto>()
+            .ForMember(dest => dest.DisplayName, options => options.MapFrom(src => src.User.DisplayName))
+            .ForMember(dest => dest.UserId, options => options.MapFrom(src => src.User.Id))
+            .ForMember(dest => dest.ImageUrl, options => options.MapFrom(src => src.User.ImageUrl));
     }
 }

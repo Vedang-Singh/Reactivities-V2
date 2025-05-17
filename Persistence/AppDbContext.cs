@@ -1,15 +1,17 @@
 ﻿using Domain;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Persistence;
 
 // Options is passed from options.UseSqlite(...) in API/Program.cs
-public class AppDbContext(DbContextOptions options): IdentityDbContext<User>(options)
+public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(options)
 {
     public required DbSet<Activity> Activities { get; set; }
     public required DbSet<ActivityAttendee> ActivityAttendees { get; set; }
     public required DbSet<Photo> Photos { get; set; }
+    public required DbSet<Comment> Comments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -29,5 +31,22 @@ public class AppDbContext(DbContextOptions options): IdentityDbContext<User>(opt
             .HasOne(a => a.Activity)
             .WithMany(aa => aa.Attendees)
             .HasForeignKey(aa => aa.ActivityId);
+
+        // to get consisitant dates in UTC
+        var dateTimeConverter = new ValueConverter<DateTime, DateTime>(
+            v => v.ToUniversalTime(),
+            v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+        );
+
+        foreach ( var entityType in builder.Model.GetEntityTypes() )
+        {
+            foreach ( var property in entityType.GetProperties() )
+            {
+                if ( property.ClrType == typeof(DateTime) )
+                {
+                    property.SetValueConverter(dateTimeConverter);
+                }
+            }
+        }
     }
 }
