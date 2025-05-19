@@ -12,6 +12,7 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
     public required DbSet<ActivityAttendee> ActivityAttendees { get; set; }
     public required DbSet<Photo> Photos { get; set; }
     public required DbSet<Comment> Comments { get; set; }
+    public required DbSet<UserFollowing> UserFollowings { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -31,6 +32,22 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
             .HasOne(a => a.Activity)
             .WithMany(aa => aa.Attendees)
             .HasForeignKey(aa => aa.ActivityId);
+
+        builder.Entity<UserFollowing>(x =>
+        {
+            x.HasKey(k => new { k.ObserverId, k.TargetId });
+
+            x.HasOne(k => k.Observer)
+                .WithMany(user => user.Followings)
+                .HasForeignKey(k => k.ObserverId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            x.HasOne(k => k.Target)
+                .WithMany(user => user.Followers)
+                .HasForeignKey(k => k.TargetId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
 
         // to get consisitant dates in UTC
         var dateTimeConverter = new ValueConverter<DateTime, DateTime>(

@@ -28,6 +28,10 @@ export default function AvatarPopover({ profile }: Props) {
                 alt={profile.displayName + ' image'}
                 src={profile.imageUrl}
                 component={Link}
+                sx={{
+                    border: profile.following? 3 : 0,
+                    borderColor: 'secondary.main',
+                }}
                 to={`/profiles/${profile.id}`}
                 onMouseEnter={handlePopoverOpen}
                 onMouseLeave={handlePopoverClose}
