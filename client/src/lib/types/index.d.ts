@@ -14,7 +14,12 @@ type Activity = {
     isHost: boolean
     hostId: string
     hostDisplayName: string
-    hostImageUrl: string
+    hostImageUrl?: string
+}
+
+type PagedList<T, TCursor> = {
+    items: T[]
+    nextCursor: TCursor
 }
 
 type ChatComment = {

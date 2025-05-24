@@ -5,6 +5,7 @@ using Domain;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
+
 public class ProfilesController : BaseApiController
 {
     [HttpPost("add-photo")]
@@ -57,5 +58,12 @@ public class ProfilesController : BaseApiController
             UserId = userId,
             Predicate = predicate
         }));
+    }
+
+    [HttpGet("{userId}/activities")]
+    public async Task<IActionResult> GetUserActivities(string userId, string filter)
+    {
+        return HandleResult(await Mediator.Send(new GetUserActivities.Query
+        { UserId = userId, Filter = filter }));
     }
 }

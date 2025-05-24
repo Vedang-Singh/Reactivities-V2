@@ -56,6 +56,8 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Date");
+
                     b.ToTable("Activities");
                 });
 

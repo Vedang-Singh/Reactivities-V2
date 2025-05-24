@@ -1,5 +1,9 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace Domain;
 
+// creates index on the Date property for better performance
+[Index(nameof(Date))]
 public class Activity
 {
     // string are better to work with than Guids cz can assign it to, say, "a"
@@ -9,7 +13,7 @@ public class Activity
     public DateTime Date { get; set; }
     public required string Description { get; set; }
     public required string Category { get; set; }
-    public bool IsCancelled { get; set; }
+    public bool IsCancelled { get; set; } 
 
     // location properties
     public required string City { get; set; }

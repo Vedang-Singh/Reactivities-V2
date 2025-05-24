@@ -1,29 +1,59 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import agent from "../api/agent";
 import { useLocation } from "react-router";
 import { FieldValues } from "react-hook-form";
 import { useAccount } from "./useAccount";
+import { useStore } from "./useStore";
 
 export const useActivities = (id?: string) =>
 {
+    const { activityStore: { filter, startDate } } = useStore();
     const queryClient = useQueryClient();
     const { currentUser } = useAccount();
     const location = useLocation();
 
-    const { data: activities, isLoading } = useQuery({
-        queryKey: ["activities"],
-        queryFn: async () => (await agent.get<Activity[]>("/activities/")).data,
-        // only executed in "/activities" and when no id is supplied and there is a currentUser
-        enabled: !id && location.pathname === "/activities" && !!currentUser,
-        select: data => data.map(
-            act => ({
-                ...act,
-                isHost: act.hostId === currentUser?.id,
-                isGoing: act.attendees.some(a => a.id === currentUser?.id),
-                hostImageUrl: act.attendees.find(a => a.id === act.hostId)?.imageUrl,
+    const { data: activitiesGroup, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage }
+        = useInfiniteQuery<PagedList<Activity, string>>({
+            queryKey: ['activities', filter, startDate],
+            queryFn: async ({ pageParam = null }) =>
+            {
+                const response = await agent.get<PagedList<Activity, string>>('/activities', {
+                    params: {
+                        cursor: pageParam,
+                        pageSize: 3,
+                        filter,
+                        startDate
+                    }
+                });
+                return response.data;
+            },
+            staleTime: 1000 * 60 * 5, // 5 minutes
+            placeholderData: keepPreviousData, // acts as placeholder till the new data is loaded
+            initialPageParam: null,
+            getNextPageParam: (lastPage) => lastPage.nextCursor,
+            enabled: !id && location.pathname === '/activities' && !!currentUser,
+
+            select: data => ({
+                ...data,
+                pages: data.pages.map((page) => ({
+                    ...page, // keep the nextCursor property of PagedList
+
+                    // modify items property of PagedList
+                    items: page.items.map(activity =>
+                    {
+                        const host = activity.attendees.find(x => x.id === activity.hostId);
+                        return {
+                            ...activity,
+
+                            // populate the following fields
+                            isHost: currentUser?.id === activity.hostId,
+                            isGoing: activity.attendees.some(x => x.id === currentUser?.id),
+                            hostImageUrl: host?.imageUrl
+                        }
+                    })
+                }))
             })
-        )
-    });
+        });
 
     // If isPending is used below, it will be true even if "activity" below is not used in 
     // ActivityForm.tsx when creating a new activity and it will show 
@@ -82,7 +112,7 @@ export const useActivities = (id?: string) =>
         onMutate: async (activityId: string) =>
         {
             await queryClient.cancelQueries({ queryKey: ['activities', activityId] });
-            
+
             // Copy the current activity data
             // This is used to roll back the optimistic update in case of an error
             const prevActivity = queryClient.getQueryData<Activity>(['activities', activityId]);
@@ -123,7 +153,10 @@ export const useActivities = (id?: string) =>
     })
 
     return {
-        activities,
+        activitiesGroup,
+        isFetchingNextPage,
+        fetchNextPage,
+        hasNextPage,
         isLoading,
         updateActivity,
         createActivity,
