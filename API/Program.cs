@@ -27,7 +27,7 @@ builder.Services.AddControllers(opt =>
     opt.Filters.Add(new AuthorizeFilter(policy));
 });
 builder.Services.AddDbContext<AppDbContext>(
-    options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
+    options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
 builder.Services.AddCors();
@@ -82,9 +82,13 @@ app.UseCors(builder =>
 app.UseAuthentication(); // Should be before UseAuthorization
 app.UseAuthorization();
 
+app.UseDefaultFiles(); // For serving index.html
+app.UseStaticFiles(); // For serving static files like css, js, images, etc.
+
 app.MapControllers();
 app.MapGroup("api").MapIdentityApi<User>(); // E.g. api/login
 app.MapHub<CommentHub>("/comments"); // E.g. localhost:5001/comments
+app.MapFallbackToController("Index", "Fallback"); // For SPA, e.g. React, Angular, etc.
 
 using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;

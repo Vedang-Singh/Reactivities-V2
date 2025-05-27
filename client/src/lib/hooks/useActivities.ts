@@ -27,7 +27,7 @@ export const useActivities = (id?: string) =>
                 });
                 return response.data;
             },
-            staleTime: 1000 * 60 * 5, // 5 minutes
+            // staleTime: 1000 * 60 * 5, // 5 minutes
             placeholderData: keepPreviousData, // acts as placeholder till the new data is loaded
             initialPageParam: null,
             getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -73,7 +73,7 @@ export const useActivities = (id?: string) =>
     });
 
     const updateActivity = useMutation({
-        mutationFn: async (activity: Activity) =>
+        mutationFn: async (activity: FieldValues) =>
             await agent.put("/activities", activity),
         onSuccess: async () =>
         {
@@ -144,6 +144,7 @@ export const useActivities = (id?: string) =>
         },
         onError: (error, activityId, context) =>
         {
+            console.error(error);
             // Rollback the optimistic update in case of an error
             if (context?.prevActivity)
             {
